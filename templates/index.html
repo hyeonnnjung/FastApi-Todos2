@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        #todo-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+            margin-top : 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #todo-form input,
+        #todo-form button {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #todo-form input:focus,
+        #todo-form button:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        #todo-form button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #todo-form button:hover {
+            background-color: #0056b3;
+        }
+
+        #todo-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px;
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #todo-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #todo-list li:last-child {
+            border-bottom: none;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin : 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #d32f2f;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* 스타일링: 체크박스를 완료 상태로 표시 */
+        .completed {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>To-Do List</h1>
+    <ul id="todo-list"></ul>
+    <form id="todo-form">
+        <input type="text" id="title" placeholder="Title" required>
+        <input type="text" id="description" placeholder="Description" required>
+        <button type="submit">Add To-Do</button>
+    </form>
+    <script>
+        async function fetchTodos() {
+            const response = await fetch('/todos');
+            const todos = await response.json();
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} onclick="toggleComplete(${todo.id}, this.checked)">
+                    <span class="todo-text">${todo.title}: ${todo.description} (Completed: ${todo.completed})</span>
+                    <button onclick="editTodo(${todo.id})">Edit</button>
+                    <button onclick="deleteTodo(${todo.id})">Delete</button>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+
+        document.getElementById('todo-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const response = await fetch('/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: Date.now(), title, description, completed: false })
+            });
+            if (response.ok) {
+                fetchTodos();
+            }
+        });
+
+
+        async function editTodo(id) {
+            const newTitle = prompt("Enter new title:");
+            const newDescription = prompt("Enter new description:");
+            if (newTitle && newDescription) {
+                const response = await fetch(`/todos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, title: newTitle, description: newDescription, completed: false })
+                });
+                if (response.ok) {
+                    fetchTodos();
+                }
+            }
+        }
+
+        async function deleteTodo(id) {
+            if (confirm("Are you sure you want to delete this To-Do?")) {
+                const response = await fetch(`/todos/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    fetchTodos();
+                }
+            }
+        }
+
+        async function toggleComplete(id, completed) {
+            const todos = await fetch('/todos');
+            const todosData = await todos.json();
+
+            const todoToUpdate = todosData.find(todo => todo.id === id);
+            if (todoToUpdate) {
+                const updatedTodo = {
+                    id: todoToUpdate.id,
+                    title: todoToUpdate.title,
+                    description: todoToUpdate.description,
+                    completed: completed
+                };
+
+                const response = await fetch(`/todos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedTodo)
+                });
+
+                if (response.ok) {
+                    fetchTodos();  // UI 갱신
+                }
+            }
+        }
+
+        fetchTodos();
+    </script>
+</body>
+
+</html>
