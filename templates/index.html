@@ -122,6 +122,7 @@
 
 <body>
     <h1>To-Do List</h1>
+    <h2 id="progress">Progress: 0/0</h2>
     <ul id="todo-list"></ul>
     <form id="todo-form">
         <input type="text" id="title" placeholder="Title" required>
@@ -129,6 +130,12 @@
         <button type="submit">Add To-Do</button>
     </form>
     <script>
+        async function fetchProgress() {
+            const response = await fetch('/progress');
+            const data = await response.json();
+            document.getElementById('progress').innerText = `Progress: ${data.progress}`;
+        }
+
         async function fetchTodos() {
             const response = await fetch('/todos');
             const todos = await response.json();
@@ -144,6 +151,7 @@
                 `;
                 todoList.appendChild(li);
             });
+            fetchProgress();  // 진행률 업데이트
         }
 
         document.getElementById('todo-form').addEventListener('submit', async (event) => {
@@ -188,28 +196,14 @@
         }
 
         async function toggleComplete(id, completed) {
-            const todos = await fetch('/todos');
-            const todosData = await todos.json();
-
-            const todoToUpdate = todosData.find(todo => todo.id === id);
-            if (todoToUpdate) {
-                const updatedTodo = {
-                    id: todoToUpdate.id,
-                    title: todoToUpdate.title,
-                    description: todoToUpdate.description,
-                    completed: completed
-                };
-
-                const response = await fetch(`/todos/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedTodo)
-                });
-
-                if (response.ok) {
-                    fetchTodos();  // UI 갱신
-                }
-            }
+            const response = await fetch(`/todos/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, title: "Updated Title", description: "Updated Desc", completed })
+        });
+        if (response.ok) {
+            fetchTodos();
+        }
         }
 
         fetchTodos();

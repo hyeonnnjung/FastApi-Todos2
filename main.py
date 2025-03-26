@@ -68,3 +68,11 @@ def read_root():
     with open("templates/index.html", "r", encoding = "utf-8") as file:
         content = file.read()
     return HTMLResponse(content=content)
+
+# 진행률 반환 API
+@app.get("/progress", response_model=dict)
+def get_progress():
+    todos = load_todos()
+    total = len(todos)
+    completed = sum(1 for todo in todos if todo["completed"])
+    return {"total": total, "completed": completed, "progress": f"{completed}/{total}" if total > 0 else "0/0"}
