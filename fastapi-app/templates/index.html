@@ -127,6 +127,7 @@
     <form id="todo-form">
         <input type="text" id="title" placeholder="Title" required>
         <input type="text" id="description" placeholder="Description" required>
+        <input type="date" id="due_date" required>
         <button type="submit">Add To-Do</button>
     </form>
     <script>
@@ -145,7 +146,10 @@
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <input type="checkbox" ${todo.completed ? 'checked' : ''} onclick="toggleComplete(${todo.id}, this.checked)">
-                    <span class="todo-text">${todo.title}: ${todo.description} (Completed: ${todo.completed})</span>
+                    <span class="todo-text">${todo.title}: ${todo.description} 
+                        (Due: ${todo.due_date})
+                        (Completed: ${todo.completed})
+                    </span>
                     <button onclick="editTodo(${todo.id})">Edit</button>
                     <button onclick="deleteTodo(${todo.id})">Delete</button>
                 `;
@@ -158,12 +162,20 @@
             event.preventDefault();
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
+            const due_date = document.getElementById('due_date').value;
+
             const response = await fetch('/todos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: Date.now(), title, description, completed: false })
+                body: JSON.stringify({ 
+                    id: Date.now(), 
+                    title, 
+                    description, 
+                    completed: false,
+                    due_date
+                })
             });
             if (response.ok) {
                 fetchTodos();
@@ -174,11 +186,19 @@
         async function editTodo(id) {
             const newTitle = prompt("Enter new title:");
             const newDescription = prompt("Enter new description:");
+            const newDueDate = prompt("Enter new due date (YYYY-MM-DD):", todo.due_date);
+
             if (newTitle && newDescription) {
                 const response = await fetch(`/todos/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, title: newTitle, description: newDescription, completed: false })
+                    body: JSON.stringify({ 
+                        id, 
+                        title: newTitle, 
+                        description: newDescription, 
+                        completed: false,
+                        due_date: newDueDate
+                    })
                 });
                 if (response.ok) {
                     fetchTodos();
