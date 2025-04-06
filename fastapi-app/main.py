@@ -13,6 +13,7 @@ class TodoItem(BaseModel):
     description: str
     completed: bool
     due_date: str
+    importance: str  # "low", "medium", "high"
 
 # JSON 파일 경로
 TODO_FILE = "todo.json"
@@ -23,7 +24,11 @@ def load_todos():
         with open(TODO_FILE, "r") as file:
             content = file.read().strip()
             if content:
-                return json.loads(content)
+                todos = json.loads(content)
+                for todo in todos:
+                    if "importance" not in todo:
+                        todo["importance"] = "medium"  # 기본값 설정
+                return todos
     return []
 
 # JSON 파일에 To-Do 항목 저장

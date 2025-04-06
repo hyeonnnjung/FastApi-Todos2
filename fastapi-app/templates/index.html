@@ -128,6 +128,11 @@
         <input type="text" id="title" placeholder="Title" required>
         <input type="text" id="description" placeholder="Description" required>
         <input type="date" id="due_date" required>
+        <select id="importance" required>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
         <button type="submit">Add To-Do</button>
     </form>
     <script>
@@ -149,6 +154,7 @@
                     <span class="todo-text">${todo.title}: ${todo.description} 
                         (Due: ${todo.due_date})
                         (Completed: ${todo.completed})
+                        <strong>[Importance: ${todo.importance}]</strong>
                     </span>
                     <button onclick="editTodo(${todo.id})">Edit</button>
                     <button onclick="deleteTodo(${todo.id})">Delete</button>
@@ -163,6 +169,7 @@
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
             const due_date = document.getElementById('due_date').value;
+            const importance = document.getElementById('importance').value;
 
             const response = await fetch('/todos', {
                 method: 'POST',
@@ -174,7 +181,8 @@
                     title, 
                     description, 
                     completed: false,
-                    due_date
+                    due_date,
+                    importance
                 })
             });
             if (response.ok) {
