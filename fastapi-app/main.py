@@ -59,7 +59,10 @@ def update_todo(todo_id: int, updated_todo: TodoItem):
 @app.delete("/todos/{todo_id}", response_model=dict)
 def delete_todo(todo_id: int):
     todos = load_todos()
+    original_length = len(todos)
     todos = [todo for todo in todos if todo["id"] != todo_id]
+    if len(todos) == original_length:
+        raise HTTPException(status_code=404, detail="To-Do item not found")
     save_todos(todos)
     return {"message": "To-Do item deleted"}
 
