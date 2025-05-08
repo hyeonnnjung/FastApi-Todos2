@@ -4,7 +4,11 @@ FROM python:3.9-slim
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 안전한 사용자 생성 및 전환
+# 의존성은 root 권한으로 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 비루트 사용자 생성
 RUN adduser --disabled-password --gecos '' appuser
 USER appuser
 
