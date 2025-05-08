@@ -85,3 +85,11 @@ def get_progress():
     total = len(todos)
     completed = sum(1 for todo in todos if todo["completed"])
     return {"total": total, "completed": completed, "progress": f"{completed}/{total}" if total > 0 else "0/0"}
+
+
+# 중요도 필터링 기능 추가
+@app.get("/todos/filter", response_model=list[TodoItem])
+def filter_todos(importance: str):
+    todos = load_todos()
+    return [todo for todo in todos if todo["importance"] == importance]
+
