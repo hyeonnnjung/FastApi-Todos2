@@ -1,8 +1,10 @@
 __pycache__/
 *.pyc
-.git
+.git/
 .env
-*.sqlite3
+.venv/
+tests/
+*.log
 coverage.xml
 htmlcov/
 pytest_report/

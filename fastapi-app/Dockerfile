@@ -4,6 +4,10 @@ FROM python:3.9-slim
 # 작업 디렉토리 설정
 WORKDIR /app
 
+# 안전한 사용자 생성 및 전환
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
 # 필요한 파일 복사
 COPY . .
 
