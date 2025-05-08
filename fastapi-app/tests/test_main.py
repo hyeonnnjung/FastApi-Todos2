@@ -82,7 +82,7 @@ def test_update_todo_not_found():
 
 def test_delete_todo():
     # 존재하는 항목을 삭제하고 응답 메시지 확인
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance : "medium")
+    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance="medium")
     save_todos([todo.dict()])
     response = client.delete("/todos/1")
     assert response.status_code == 200
