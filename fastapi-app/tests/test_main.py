@@ -23,7 +23,7 @@ def test_get_todos_empty():
 
 def test_get_todos_with_items():
     # 미리 항목을 저장한 후, GET 요청으로 불러오는지 테스트
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance : "medium")
+    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance="medium")
     save_todos([todo.dict()])
     response = client.get("/todos")
     assert response.status_code == 200
