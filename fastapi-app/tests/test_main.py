@@ -23,7 +23,7 @@ def test_get_todos_empty():
 
 def test_get_todos_with_items():
     # 미리 항목을 저장한 후, GET 요청으로 불러오는지 테스트
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance : "medium")
+    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance="medium")
     save_todos([todo.dict()])
     response = client.get("/todos")
     assert response.status_code == 200
@@ -52,7 +52,7 @@ def test_create_todo_invalid():
 
 def test_update_todo():
     # 기존 항목을 PUT 요청으로 업데이트 후 값 변경 확인
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06")
+    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance="medium")
     save_todos([todo.dict()])
     updated_todo = {
         "id": 1,
@@ -82,7 +82,7 @@ def test_update_todo_not_found():
 
 def test_delete_todo():
     # 존재하는 항목을 삭제하고 응답 메시지 확인
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance : "medium")
+    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance="medium")
     save_todos([todo.dict()])
     response = client.delete("/todos/1")
     assert response.status_code == 200
