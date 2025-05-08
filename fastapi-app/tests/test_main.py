@@ -52,7 +52,7 @@ def test_create_todo_invalid():
 
 def test_update_todo():
     # 기존 항목을 PUT 요청으로 업데이트 후 값 변경 확인
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06")
+    todo = TodoItem(id=1, title="Test", description="Test description", completed=False, due_date="2025-04-06", importance="medium")
     save_todos([todo.dict()])
     updated_todo = {
         "id": 1,
